@@ -14,6 +14,19 @@ const partition = (data) => {
   return partition;
 };
 
+const handleOnLastClick = (e) => {
+  console.log("I'm last");
+
+  // console.log(e.srcElement.__data__);
+};
+
+const handleHover = (e) => {
+  // console.log("hovering");
+  // console.log(e.relatedTarget);
+  // let target = e.relatedTarget;
+  // target.style("stroke", "red");
+};
+
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -34,15 +47,28 @@ const Sunburst = (props) => {
 
   const renderSunburst = () => {
     const { data, width } = props;
+
     const color = d3.scaleOrdinal(
-      d3.quantize(d3.interpolateRainbow, data.children.length + 1)
+      d3.quantize(d3.interpolateRainbow, data.children.length + 2)
     );
+
+    // var color = d3
+    //   .scaleOrdinal()
+    //   .range([
+    //     "red",
+    //     "green",
+    //     "blue",
+    //     "#6b486b",
+    //     "#a05d56",
+    //     "#d0743c",
+    //     "#ff8c00",
+    //   ]);
 
     if (data) {
       document.querySelectorAll("g").forEach((node) => {
         node.remove();
       });
-      const radius = width / 6;
+      const radius = width / 8;
       const svg = d3
         .select(svgRef.current)
         .attr("viewBox", [0, 0, width, width])
@@ -86,7 +112,16 @@ const Sunburst = (props) => {
       path
         .filter((d) => d.children)
         .style("cursor", "pointer")
-        .on("click", clicked);
+        .style("pointer-events", "all")
+        .on("mouseover", handleHover)
+        .on("click", clicked)
+        .attr("id", "target");
+
+      path
+        .filter((d) => !d.children)
+        .style("cursor", "pointer")
+        .on("click", handleOnLastClick)
+        .attr("id", "target");
 
       path.append("title").text(
         (d) =>
@@ -108,7 +143,15 @@ const Sunburst = (props) => {
         .attr("dy", "0.35em")
         .attr("fill-opacity", (d) => +labelVisible(d.current))
         .attr("transform", (d) => labelTransform(d.current))
-        .text((d) => d.data.name);
+        .text((d) => {
+          return d.data.total
+            ? `${d.data.name} : $${d.data.total}`
+            : `$${d.data.name}`;
+        });
+      // .append("svg:tspan")
+      // .attr("x", 0)
+      // .attr("dy", "2em")
+      // .text((d) => `Total: ${d.data.total}`);
 
       const parent = g
         .append("circle")
@@ -189,11 +232,11 @@ const Sunburst = (props) => {
       }
 
       function arcVisible(d) {
-        return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+        return d.y1 <= 4 && d.y0 >= 1 && d.x1 > d.x0;
       }
 
       function labelVisible(d) {
-        return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+        return d.y1 <= 4 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
       }
 
       function labelTransform(d) {
@@ -214,12 +257,12 @@ const Sunburst = (props) => {
         ref={svgRef}
         id={`${props.keyId}-svg`}
       ></svg>
-      <Button
+      {/* <Button
         style={{ position: "absolute", top: "50%", left: "50%" }}
         onClick={props.handleClick}
       >
         Hello
-      </Button>
+      </Button> */}
     </div>
   );
 };

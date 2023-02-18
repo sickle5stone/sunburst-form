@@ -7,8 +7,8 @@ import TextField from "@mui/material/TextField";
 
 export default function TemporaryDrawer(props) {
   const { open, setOpen, row, onSave, data } = props;
-  console.log(data);
-  const { name: account, children, value: balance } = data;
+  // console.log(data);
+  const { name: account, children, value: balance, total } = data;
   // const accountCategories = {};
 
   const [accountCategories, setAccountCategories] = React.useState({});
@@ -18,17 +18,21 @@ export default function TemporaryDrawer(props) {
     let totalBalance = 0;
     const categories = {};
     children.forEach((child) => {
-      totalBalance += Number.parseInt(child.value);
-      categories[child.name] = child.value;
+      console.log(child);
+      totalBalance += Number.parseInt(child.total);
+      categories[child.name] = Number.parseInt(child.total);
     });
+
+    // console.log(categories);
 
     setTotalBalance(totalBalance);
     setAccountCategories(categories);
-  }, [children]);
+  }, [data, children]);
 
   const [addCategory, setAddCategory] = React.useState(false);
   const [newCategory, setNewCategory] = React.useState("");
   const [newBalance, setNewBalance] = React.useState(0);
+  const [saving, setSaving] = React.useState(true);
 
   const handleAddCategories = () => {
     if (accountCategories[newCategory] !== undefined) {
@@ -43,20 +47,45 @@ export default function TemporaryDrawer(props) {
   };
 
   const handleSave = () => {
+    // console.log(newCategory);
+    // if (newCategory === "") {
+    //   return;
+    // }
+
+    // const newAcctCategory = {
+    //   ...accountCategories,
+    //   [newCategory]: Number.parseInt(newBalance),
+    // };
+
+    // setAccountCategories(newAcctCategory);
+    setNewCategory("");
+    setNewBalance(0);
+
+    // console.log(newAcctCategory);
     onSave(accountCategories);
     // setOpen(!open);
   };
+
+  // React.useEffect(() => {
+  //   if (newBalance === 0) return;
+  //   if (newCategory === "") return;
+
+  //   setAccountCategories({
+  //     ...accountCategories,
+  //     [newCategory]: Number.parseInt(newBalance),
+  //   });
+  // }, [newCategory, newBalance, accountCategories]);
 
   return (
     // <Drawer anchor={"right"} open={open} onClose={() => setOpen(!open)}>
     <Box sx={{ padding: "20px" }} role="presentation">
       <h1>Account: {account}</h1>
       <TextField
-        style={{ width: "400px", margin: "20px 0px" }}
+        style={{ margin: "20px 0px" }}
         id="outlined-basic"
         label="Total Balance"
         variant="outlined"
-        value={totalBalance}
+        value={total}
         disabled
       />
       <Divider></Divider>
@@ -66,30 +95,32 @@ export default function TemporaryDrawer(props) {
         return (
           <React.Fragment>
             <TextField
-              style={{ width: "400px", margin: "20px 0px" }}
+              style={{ margin: "20px 0px" }}
               id="outlined-basic"
               label="Category"
               variant="outlined"
               value={key}
+              disabled={key === "uncategorized"}
             />
             <TextField
-              style={{ width: "400px", margin: "20px 0px" }}
+              style={{ margin: "20px 0px 0px 20px" }}
               id="outlined-basic"
               label="Balance for Category"
               variant="outlined"
               value={value}
+              disabled={key === "uncategorized"}
             />
-            {!addCategory && (
+            {/* {!addCategory && (
               <Button onClick={() => setAddCategory(true)}>+</Button>
-            )}
+            )} */}
           </React.Fragment>
         );
       })}
-      {addCategory && (
+      {addCategory ? (
         <React.Fragment>
           <div style={{ display: "flex" }}>
             <TextField
-              style={{ width: "400px", margin: "10px" }}
+              style={{ margin: "20px 0" }}
               id="outlined-basic"
               label="Category"
               variant="outlined"
@@ -97,7 +128,7 @@ export default function TemporaryDrawer(props) {
               onChange={(e) => setNewCategory(e.target.value)}
             />
             <TextField
-              style={{ width: "400px", margin: "10px" }}
+              style={{ margin: "20px 0 0 20px" }}
               id="outlined-basic"
               label="Balance for Category"
               variant="outlined"
@@ -107,6 +138,8 @@ export default function TemporaryDrawer(props) {
             <Button onClick={() => handleAddCategories()}>+</Button>
           </div>
         </React.Fragment>
+      ) : (
+        <Button onClick={() => setAddCategory(true)}>+</Button>
       )}
       <Divider />
       <Button

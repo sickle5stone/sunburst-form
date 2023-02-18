@@ -1,0 +1,32 @@
+{
+    "org": {
+        "name": "Acme",
+        "total": 100,
+        "entities": {
+            "entity1": {
+                "total": 50,
+                "accounts": {
+                    "account1": {
+                        "total": 50,
+                        "categories": {
+                            "uncategorized": 8,
+                            "F": 25,
+                            "CL": 17
+                        }
+                    }                        
+                }
+            },
+            "entity2": {
+                "total": 50,
+                "accounts": {
+                    "account1": {
+                        "total": 50,
+                        "categories": {
+                            "uncategorized": 50
+                        }
+                    }                        
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "name": "Org",
+    "total": 200,
+    "children": [
+        {
+            "name": "entity1",
+            "total": 100,
+            "children": [
+                {
+                    "name": "account1",
+                    "total": 50,
+                    "children": [
+                        {
+                            "name": "uncategorized",
+                            "total": 50,
+                            "children": [
+                                {
+                                    "name": "uncategorized",
+                                    "value": 50
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "account2",
+                    "total": 50,
+                    "children": [
+                        {
+                            "name": "uncategorized",
+                            "total": 50,
+                            "children": [
+                                {
+                                    "name": "uncategorized",
+                                    "value": 50
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "entity2",
+            "total": 100,
+            "children": [
+                {
+                    "name": "account1",
+                    "total": 50,
+                    "children": [
+                        {
+                            "name": "uncategorized",
+                            "total": 50,
+                            "children": [
+                                {
+                                    "name": "uncategorized",
+                                    "value": 50
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "account2",
+                    "total": 50,
+                    "children": [
+                        {
+                            "name": "uncategorized",
+                            "total": 50,
+                            "children": [
+                                {
+                                    "name": "uncategorized",
+                                    "value": 50
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

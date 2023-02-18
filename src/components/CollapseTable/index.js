@@ -35,22 +35,25 @@ function createData(account, balance) {
 }
 
 function Row(props) {
-  const { row, onSave, data } = props;
+  const { row, onSave, data, entity } = props;
   const [open, setOpen] = React.useState(false);
 
+  if (data === undefined || Object.keys(data).length < 0) {
+    return;
+  }
+
   const handleSave = (saveData) => {
-    const appendSaveData = {
-      name: data.name,
-      children: Object.entries(saveData).map(([key, value]) => ({
-        name: key,
-        value,
-      })),
-    };
+    // console.log(saveData, entity, data.name);
+    // const appendSaveData = {
+    //   name: data.name,
+    //   children: Object.entries(saveData).map(([key, value]) => ({
+    //     name: key,
+    //     value,
+    //   })),
+    // };
 
-    onSave(appendSaveData);
+    onSave(saveData, entity, data.name);
   };
-
-  console.log(data);
 
   return (
     <React.Fragment>
@@ -70,7 +73,7 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {data.name}
         </TableCell>
-        <TableCell align="right">{data.name}</TableCell>
+        <TableCell align="right">{data.total}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -111,17 +114,25 @@ Row.propTypes = {
 // const rows = [createData("Frozen yoghurt", 159, 6.0, 24, 4.0, 3.99)];
 
 export default function CollapsibleTable(props) {
-  const { rows, onSave, data } = props;
+  const { rows, onSave, data, entity } = props;
 
   if (data.children.length < 1) {
     return;
   }
 
+  // console.log(data, entity);
+  const filtered = data?.children.filter((child) => {
+    return child?.name === entity;
+  });
+  // console.log(filtered[0]);
+  let filteredData = filtered[0];
+
+  // console.log(filteredData);
+
+  // console.log(filteredData);
+
   return (
-    <TableContainer
-      component={Paper}
-      style={{ width: "80%", border: "2px solid #00008040", padding: "20px" }}
-    >
+    <TableContainer component={Paper} style={{}}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
@@ -131,8 +142,13 @@ export default function CollapsibleTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.children.map((child) => (
-            <Row key={child.name} data={child} onSave={onSave} />
+          {filteredData.children.map((child) => (
+            <Row
+              key={child.name}
+              data={child}
+              onSave={onSave}
+              entity={entity}
+            />
           ))}
         </TableBody>
       </Table>
