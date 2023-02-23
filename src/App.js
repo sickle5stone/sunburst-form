@@ -4,14 +4,29 @@ import React, { useEffect, useState } from "react";
 import Sunburst from "./SunburstChartInt";
 import data3 from "./data3";
 import datamap from "./datamap";
-import { Button, Divider, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import DataGrid from "./components/DataGrid";
 import Drawer from "./components/Drawer";
+import { default as MuiDrawer } from "@mui/material/Drawer";
 import CollapsibleTable from "./components/CollapseTable";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Zoom from "@mui/material/Zoom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { sortOnCategories } from "./utils";
+import { Mail, MarkunreadMailbox } from "@mui/icons-material";
+import { json } from "d3";
 
 function App() {
   const [chart, setChart] = React.useState(false);
@@ -25,6 +40,10 @@ function App() {
   const [newOrgBalanceValue, setNewOrgBalanceValue] = useState(0);
   const [entitySelected, setEntitySelected] = useState(0);
   const [entityChild, setEntityChild] = useState({});
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [storedValue, setStoredValue] = useState({});
+  const [disableForm, setDisableForm] = useState(false);
+  const [activeAccount, setActiveAccount] = useState(undefined);
 
   const [rows, setRows] = useState([]);
   // console.log(data3);
@@ -47,104 +66,14 @@ function App() {
     }
   );
 
-  // React.useEffect(() => {
-  //   setShow(!show);
-  //   // setTimeout(() => {
-  //   //   setShow(false);
-  //   // }, [500]);
-  //   console.log(jsonData);
-  // }, [jsonData]);
-
-  // const categories = new Set();
-  // for (const entity of Object.values(jsonChildrens.org.entities)) {
-  //   for (const account of Object.values(entity.accounts)) {
-  //     for (const category of Object.keys(account.categories)) {
-  //       categories.add(category);
-  //     }
-  //   }
-  // }
-
-  // console.log(categories);
-
-  // const selectedCategory = "uncategorized";
-
-  // const matchingAccounts = [];
-  // for (const [entityKey, entity] of Object.entries(
-  //   jsonChildrens.org.entities
-  // )) {
-  //   for (const [accountKey, account] of Object.entries(entity.accounts)) {
-  //     if (account.categories[selectedCategory]) {
-  //       matchingAccounts.push({
-  //         entity: entityKey,
-  //         account: accountKey,
-  //         total: account.total,
-  //       });
-  //     }
-  //   }
-  // }
-
-  // const newData = {
-  //   org: {
-  //     name: jsonChildrens.org.name,
-  //     total: jsonChildrens.org.total,
-  //     categories: {},
-  //   },
-  // };
-
-  // for (const [entityKey, entity] of Object.entries(
-  //   jsonChildrens.org.entities
-  // )) {
-  //   for (const [accountKey, account] of Object.entries(entity.accounts)) {
-  //     for (const [category, amount] of Object.entries(account.categories)) {
-  //       if (!newData.org.categories[category]) {
-  //         newData.org.categories[category] = {
-  //           total: 0,
-  //           accounts: [],
-  //         };
-  //       }
-  //       newData.org.categories[category].accounts.push({
-  //         entity: entityKey,
-  //         account: accountKey,
-  //         total: amount,
-  //       });
-  //       newData.org.categories[category].total += amount;
-  //     }
-  //   }
-  // }
-
-  // console.log(newData);
-
-  // console.log(matchingAccounts);
-
-  // Step 4: Display the matching accounts
-  // console.log(`Accounts with category "${selectedCategory}":`);
-  // for (const account of matchingAccounts) {
-  //   console.log(
-  //     `${account.entity} - ${account.account} - total: ${account.total}`
-  //   );
-  // }
-
-  // React.useEffect(() => {
-  //   setChart(false);
-  // }, [data3]);
-
-  // React.useEffect(() => {
-  //   setChart(true);
-  // }, [jsonChildrens]);
-  // React.useEffect(() => {
-  //   setChart(false);
-  // }, [jsonData]);
-
-  // React.useEffect(() => {
-  //   // setChart(!chart);
-  //   setTimeout(() => {
-  //     setChart(chart);
-  //   }, 200);
-  // }, [jsonData]);
-
-  // const handleClick = () => {
-  //   setChart(!chart);
-  // };
+  const sortDataOnCategories = (focus) => {
+    const newData = sortOnCategories(jsonChildrens);
+    setStoredValue(jsonChildrens);
+    setDisableForm(true);
+    setCategoryFilter(focus);
+    console.log(newData);
+    setJsonChildrens(newData);
+  };
 
   useEffect(() => {
     makeJson(rows);
@@ -172,7 +101,7 @@ function App() {
                 account1: {
                   total: Number.parseInt(balance),
                   categories: {
-                    uncategorized: Number.parseInt(balance),
+                    "General Purpose": Number.parseInt(balance),
                   },
                 },
               },
@@ -181,13 +110,6 @@ function App() {
         },
       };
     });
-    // jsonChildrens["org"].entities = {
-    //   ...jsonChildrens["org"].entities,
-    //   [account]: {
-    //     total: balance,
-    //     accounts: {},
-    //   },
-    // };
 
     setNewEntityValue("");
     setNewEntityBalanceValue(0);
@@ -201,44 +123,17 @@ function App() {
     // const newRow = [];
     const { entity, level, key, balance, account } = newFields;
 
-    // let newJsonChildrens = jsonChildrens;
-
-    // let newObj = {
-    //   org: {
-    //     ...jsonChildrens["org"],
-    //     entities: {
-    //       ...jsonChildrens["org"].entities,
-    //       [entitySelected]: {
-    //         ...jsonChildrens["org"].entities[entitySelected],
-    //         accounts: {
-    //           ...jsonChildrens["org"].entities[entitySelected]["accounts"],
-    //           [account]: {
-    //             total: balance,
-    //             uncategorized: balance,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // };
     let newObj = JSON.parse(JSON.stringify(jsonChildrens));
     newObj["org"]["entities"][entitySelected]["accounts"] = {
       ...newObj["org"]["entities"][entitySelected]["accounts"],
       [account]: {
         total: balance,
         categories: {
-          uncategorized: balance,
+          "General Purpose": balance,
         },
       },
     };
     setJsonChildrens(newObj);
-    // newJsonChildrens["org"]["entities"][entitySelected]["accounts"] = {
-    //   ...newJsonChildrens["org"]["entities"][entitySelected]["accounts"],
-    //   [account]: {
-    //     total: balance,
-    //     uncategorized: balance,
-    //   },
-    // };
 
     // console.log(newJsonChildrens);
     // setJsonChildrens(newJsonChildrens);
@@ -251,83 +146,10 @@ function App() {
     if (jsonChildrens[account] !== undefined) {
       return;
     }
-
-    // newRow.push({ id: Date.now(), account: account, balance: balance });
-    // appendStateArray(newRow, rows, setRows);
-    // console.log("here");
-    // console.log(jsonChildrens);
-    // setJsonChildrens({
-    //   ...jsonChildrens,
-    //   [account]: [{ name: "uncategorized", value: balance }],
-    // });
-
-    // setJsonChildrens((prevState) => {
-    //   return {
-    //     org: {
-    //       ...prevState["org"],
-    //       entities: {
-    //         ...prevState["org"]["entities"],
-    //         [account]: {
-    //           total: balance,
-    //           accounts: {},
-    //         },
-    //       },
-    //     },
-    //   };
-    // });
   };
-
-  // console.log(jsonChildrens);
 
   const makeJson = (rows) => {
     if (rows.length < 1) return;
-  };
-
-  const loadData = (data) => {
-    if (!data && data === undefined && data?.children === undefined) return;
-
-    const tempData = data;
-
-    const newElements = [];
-
-    const manipulateJSON = () => {
-      // tempData.children
-      // console.log(tempData);
-    };
-
-    data.children.forEach((child) => {
-      newElements.push(
-        <TextField
-          key={child.name}
-          style={{ width: "500px", margin: "10px" }}
-          id="outlined-basic"
-          label="Outlined"
-          variant="outlined"
-          value={child.name}
-        />
-      );
-      newElements.push(<Button onClick={() => manipulateJSON()}>+</Button>);
-      newElements.push(<Divider />);
-      // console.log(renderElement);
-      child.children.forEach((child) => {
-        if (child.children !== undefined) {
-          child.children.forEach((child) => {
-            newElements.push(
-              <TextField
-                style={{ width: "500px", margin: "10px" }}
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-                value={child.name}
-              />
-            );
-          });
-        }
-      });
-      newElements.push(<Divider />);
-    });
-
-    appendStateArray(newElements, renderElement, setRenderElement);
   };
 
   useEffect(() => {
@@ -336,90 +158,90 @@ function App() {
     }
     let total = 0;
 
-    // console.log(Object.values(jsonChildrens["org"]["entities"]));
-
-    // console.log({
-    //   name: jsonChildrens["org"]["name"],
-    //   total: jsonChildrens["org"]["total"],
-    //   children: [
-    //     ...jsonData.children,
-    //     ...Object.entries(jsonChildrens["org"]["entities"]).map(
-    //       ([key, value]) => {
-    //         console.log(key, value);
-    //         return {
-    //           name: key,
-    //           total: value.total,
-    //           children: Object.values(value.accounts),
-    //         };
-    //       }
-    //     ),
-    //   ],
-    // });
     console.log("update was called");
 
-    setJsonData({
-      name: jsonChildrens["org"]["name"],
-      total: jsonChildrens["org"]["total"],
-      children:
-        [
-          ...Object.entries(jsonChildrens["org"]["entities"]).map(
-            ([key, value]) => {
+    if (jsonChildrens?.["org"]?.["entities"]) {
+      setJsonData({
+        name: jsonChildrens["org"]["name"],
+        total: jsonChildrens["org"]["total"],
+        children:
+          [
+            ...Object.entries(jsonChildrens["org"]["entities"]).map(
+              ([key, value]) => {
+                return {
+                  name: key,
+                  total: value.total,
+                  children:
+                    Object.entries(value?.accounts).map(([key, value]) => {
+                      return {
+                        name: key,
+                        total: value.total,
+                        children:
+                          Object.entries(value?.categories).map(
+                            ([key, value]) => {
+                              // console.log(key, value);
+                              return {
+                                name: key,
+                                total: value,
+                                value,
+                              };
+                            }
+                          ) || [],
+                      };
+                    }) || [],
+                };
+              }
+            ),
+          ] || [],
+      });
+    } else {
+      const entityMap = {};
+      jsonChildrens?.["org"]?.["categories"][categoryFilter].accounts.forEach(
+        (acc) => {
+          // console.log(acc);
+          if (entityMap[acc.entity]) {
+            entityMap[acc.entity] = {
+              total: entityMap[acc.entity].total + acc.total,
+              accounts: [
+                ...entityMap[acc.entity].accounts,
+                { name: acc.account, total: acc.total },
+              ],
+            };
+          } else {
+            entityMap[acc.entity] = {
+              total: acc.total,
+              accounts: [
+                {
+                  name: acc.account,
+                  total: acc.total,
+                },
+              ],
+            };
+          }
+        }
+      );
+      // console.log(jsonChildrens["org"]["categories"][categoryFilter]);
+
+      setJsonData({
+        name: categoryFilter,
+        total: jsonChildrens?.["org"]?.["categories"][categoryFilter]["total"],
+        children: Object.entries(entityMap).map(([key, value]) => {
+          // console.log(value);
+          return {
+            name: key,
+            total: value.total,
+            children: Object.values(value.accounts).map((value) => {
+              console.log(value);
               return {
-                name: key,
-                total: value.total,
-                children:
-                  Object.entries(value?.accounts).map(([key, value]) => {
-                    return {
-                      name: key,
-                      total: value.total,
-                      children:
-                        Object.entries(value?.categories).map(
-                          ([key, value]) => {
-                            // console.log(key, value);
-                            return {
-                              name: key,
-                              total: value,
-                              children: [
-                                {
-                                  name: value,
-                                  value,
-                                },
-                              ],
-                            };
-                          }
-                        ) || [],
-                    };
-                  }) || [],
+                name: value.name,
+                value: value.total,
               };
-            }
-          ),
-        ] || [],
-    });
+            }),
+          };
+        }),
+      });
+    }
   }, [jsonChildrens]);
-
-  //   ]
-  // })
-
-  // Object.entries(jsonChildrens).forEach(([key, value]) => {
-  //   total = value.reduce(
-  //     (acc, next) => Number.parseInt(acc) + Number.parseInt(next.value),
-  //     0
-  //   );
-  // });
-
-  // setJsonData((jsonData) => {
-  //   console.log(jsonData);
-  //   return {
-  //     ...jsonData,
-  //     total: total,
-  //     children: Object.entries(jsonChildrens).map(([key, value]) => {
-  //       return {
-  //         name: key,
-  //         children: value,
-  //       };
-  //     }),
-  //   };
-  // });
 
   const handleSave = (saveData, entity, account) => {
     // const updatedChildren = jsonChildrens;
@@ -428,26 +250,23 @@ function App() {
     newObj["org"]["entities"][entity]["accounts"][account]["categories"] =
       saveData;
     setJsonChildrens(newObj);
-
-    // updatedChildren[saveData["name"]] = saveData["children"];
-    // setJsonChildrens((jsonChildren) => ({
-    //   ...jsonChildren,
-    //   [saveData["name"]]: saveData["children"],
-    // }));
   };
-
-  // React.useEffect(() => {
-  //   loadData(data);
-  // }, []);
 
   const renderForm = () => {
     // console.log(renderElement);
     // console.log(jsonData);
     return (
       <div className="form">
-        <h1>{jsonData.name}</h1>
+        <h1 style={{ color: "navy" }}>{jsonData.name}</h1>
         <h2>Account Overview</h2>
-        <h3>Balance: {jsonData.total}</h3>
+        <h3>
+          Balance:{" "}
+          <span
+            style={{ paddingLeft: "10px", fontSize: "24px", color: "navy" }}
+          >
+            ${jsonData.total}
+          </span>
+        </h3>
         <Box
           style={{
             display: "flex",
@@ -458,7 +277,13 @@ function App() {
           }}
         >
           <Paper
-            style={{ minWidth: "80%", display: "flex", alignItems: "center" }}
+            style={{
+              minWidth: "80%",
+              display: "flex",
+              alignItems: "center",
+              padding: "10px 20px",
+              margin: "0 0 20px 0",
+            }}
           >
             <TextField
               style={{ width: "500px", margin: "10px" }}
@@ -467,6 +292,7 @@ function App() {
               variant="outlined"
               value={newEntityValue}
               onChange={(e) => setNewEntityValue(e.target.value)}
+              disabled={disableForm}
             />
 
             <TextField
@@ -476,9 +302,15 @@ function App() {
               variant="outlined"
               value={newEntityBalanceValue}
               onChange={(e) => setNewEntityBalanceValue(e.target.value)}
+              disabled={disableForm}
             />
             <Button
-              style={{ maxHeight: "3.5em" }}
+              style={{
+                maxHeight: "4em",
+                padding: "10px 20px",
+                minWidth: "50px",
+                fontWeight: "bold",
+              }}
               onClick={() => {
                 appendEntity({
                   entity: newEntityValue,
@@ -486,32 +318,53 @@ function App() {
                 });
               }}
               variant="contained"
+              disabled={disableForm}
             >
               Add Entity
             </Button>
           </Paper>
 
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={entitySelected}
-            label="Age"
-            onChange={(e) => setEntitySelected(e.target.value)}
+          <Paper
+            style={{
+              minWidth: "80%",
+              display: "flex",
+              flexDirection: "column",
+              // alignItems: "center",
+              padding: "10px 20px 40px",
+              margin: "0 0 20px 0",
+            }}
           >
-            <MenuItem value={0}>Please Select</MenuItem>
-            {Object.entries(jsonChildrens["org"]["entities"]).map(
-              ([key, value]) => {
-                // console.log(key, value);
-                return <MenuItem value={key}>{key}</MenuItem>;
-              }
-            )}
-            {/* <MenuItem value={1}>Entity 1</MenuItem>
+            <h3>Entity</h3>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={entitySelected}
+              label="Age"
+              onChange={(e) => setEntitySelected(e.target.value)}
+              disabled={disableForm}
+            >
+              <MenuItem value={0}>Please Select</MenuItem>
+              {jsonChildrens?.["org"]?.["entities"] &&
+                Object.entries(jsonChildrens["org"]["entities"]).map(
+                  ([key, value]) => {
+                    // console.log(key, value);
+                    return <MenuItem value={key}>{key}</MenuItem>;
+                  }
+                )}
+              {/* <MenuItem value={1}>Entity 1</MenuItem>
             <MenuItem value={2}>Entity 2</MenuItem>
             <MenuItem value={3}>Entity 3</MenuItem> */}
-          </Select>
+            </Select>
+          </Paper>
 
           <Paper
-            style={{ minWidth: "80%", display: "flex", alignItems: "center" }}
+            style={{
+              minWidth: "80%",
+              display: "flex",
+              alignItems: "center",
+              padding: "10px 20px",
+              margin: "0 0 20px 0",
+            }}
           >
             <TextField
               style={{ width: "500px", margin: "10px" }}
@@ -520,6 +373,7 @@ function App() {
               variant="outlined"
               value={newAccountValue}
               onChange={(e) => setNewAccountValue(e.target.value)}
+              disabled={disableForm}
             />
 
             <TextField
@@ -529,9 +383,13 @@ function App() {
               variant="outlined"
               value={newBalanceValue}
               onChange={(e) => setNewBalanceValue(e.target.value)}
+              disabled={disableForm}
             />
             <Button
-              style={{ maxHeight: "3.5em" }}
+              style={{
+                maxHeight: "4em",
+                fontWeight: "bold",
+              }}
               onClick={() => {
                 appendRow({
                   account: newAccountValue,
@@ -539,27 +397,41 @@ function App() {
                 });
               }}
               variant="contained"
+              disabled={disableForm}
             >
               Add Account
             </Button>
           </Paper>
-          <div
-            style={{
-              margin: "20px 0",
-              // justifyContent: "center",
-              // display: "flex",
-              minWidth: "80%",
-            }}
-          >
-            {entitySelected !== 0 && (
-              <CollapsibleTable
-                style={{}}
-                entity={entitySelected}
-                onSave={handleSave}
-                data={jsonData}
-              ></CollapsibleTable>
-            )}
-          </div>
+          {entitySelected !== 0 && (
+            <Paper
+              style={{
+                minWidth: "80%",
+                display: "flex",
+                flexDirection: "column",
+                // alignItems: "center",
+                padding: "10px 20px 40px",
+                margin: "0 0 20px 0",
+              }}
+            >
+              <h1> Accounts: </h1>
+              <div
+                style={{
+                  margin: "20px 0",
+                  // justifyContent: "center",
+                  // display: "flex",
+                  minWidth: "80%",
+                }}
+              >
+                <CollapsibleTable
+                  style={{}}
+                  entity={entitySelected}
+                  onSave={handleSave}
+                  data={jsonData}
+                  activeAccount={activeAccount}
+                ></CollapsibleTable>
+              </div>
+            </Paper>
+          )}
           {/* <DataGrid rows={rows}></DataGrid> */}
           <div
             style={{
@@ -577,45 +449,193 @@ function App() {
       </div>
     );
   };
+
+  const handleUpdateSelections = (depth, data, parent) => {
+    switch (depth) {
+      case 1:
+        console.log(depth, data, parent);
+        setEntitySelected(data);
+        break;
+      case 2:
+        console.log(depth, data, parent);
+        // setAccount
+        setEntitySelected(parent);
+        setActiveAccount(data);
+        break;
+      default:
+        return;
+    }
+  };
+
+  const [jsonError, setJsonError] = React.useState(false);
+  const [updateJsonChildrenValue, setUpdateJsonChildrenValue] = React.useState(
+    JSON.stringify(jsonChildrens, null, 4)
+  );
+
+  const handleUpdateJsonChildren = (value) => {
+    try {
+      if (JSON.parse(value)) {
+        setJsonError(false);
+        setJsonChildrens(JSON.parse(value));
+      }
+    } catch (e) {
+      console.error("incorrect json");
+      setJsonError(true);
+    }
+    setUpdateJsonChildrenValue(value);
+    // console.log(value);
+  };
+
   const ref = React.useRef(null);
 
   // console.log(JSON.stringify(jsonData, null, 4));
 
+  const [specialRoot, setSpecialRoot] = React.useState(undefined);
+  const storeRoot = (name) => {
+    setSpecialRoot(name);
+  };
+
+  const [activePage, setActivePage] = React.useState("Main");
+  const [width, setWidth] = React.useState(800);
+  const [size, setSize] = React.useState(400);
+  const [orgName, setOrgName] = React.useState("Acme");
+
+  React.useEffect(() => {
+    setJsonChildrens((prevState) => ({
+      org: {
+        ...prevState.org,
+        name: orgName,
+      },
+    }));
+  }, [orgName]);
+
   return (
     <div className="App">
       <header></header>
-      <div className="body">
-        {/* <TransitionGroup in={chart}> */}
-        {/* {chart && renderForm()} */}
-        {renderForm()}
-        <CSSTransition
-          in={!show}
-          nodeRef={ref}
-          timeout={300}
-          classNames="alert"
-        >
-          {Object.keys(jsonData).length > 0 && (
-            <Box
-              ref={ref}
-              style={{
-                right: "20px",
-                position: "fixed",
-                margin: "0 0 0 80px",
-              }}
+      <MuiDrawer
+        open={true}
+        variant="permanent"
+        ModalProps={{
+          keepMounted: false,
+        }}
+        PaperProps={{
+          style: {
+            background: "#d8d8d840",
+            paddingTop: "2.5vh",
+            position: "fixed",
+            zIndex: 1,
+          },
+        }}
+      >
+        <List>
+          {["Main", "Settings"].map((text, index) => (
+            <ListItem
+              key={text}
+              onClick={() => setActivePage(text)}
+              disablePadding
+              class="listItem"
             >
-              <Sunburst
-                // key={Date.now()}
-                data={jsonData}
-                keyId={Date.now()}
-                width={800}
-                size={800}
-                update={show}
-              />
-            </Box>
-          )}
-        </CSSTransition>
-        {/* </TransitionGroup> */}
-      </div>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Mail></Mail>
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </MuiDrawer>
+      {activePage === "Main" && (
+        <div className="body">
+          {/* <TransitionGroup in={chart}> */}
+          {/* {chart && renderForm()} */}
+          {renderForm()}
+          <CSSTransition
+            in={!show}
+            nodeRef={ref}
+            timeout={500}
+            classNames="alert"
+          >
+            {Object.keys(jsonData).length > 0 && (
+              <Box
+                ref={ref}
+                style={{
+                  top: "60px",
+                  right: "20px",
+                  position: "fixed",
+                  margin: "0 0 0 80px",
+                }}
+              >
+                <Sunburst
+                  // key={Date.now()}
+                  recalculate={sortDataOnCategories}
+                  data={jsonData}
+                  keyId={Date.now()}
+                  width={width}
+                  size={size}
+                  update={show}
+                  storeRoot={storeRoot}
+                  specialRoot={specialRoot}
+                  goBack={() => {
+                    setJsonChildrens(storedValue);
+                    setDisableForm(false);
+                  }}
+                  updateSelections={handleUpdateSelections}
+                />
+              </Box>
+            )}
+          </CSSTransition>
+          {/* </TransitionGroup> */}
+        </div>
+      )}
+      {activePage === "Settings" && (
+        <div style={{ margin: "80px 160px" }}>
+          <h3>Width</h3>
+          <TextField
+            style={{ width: "500px", margin: "10px" }}
+            id="outlined-basic"
+            label="Width"
+            variant="outlined"
+            value={width}
+            onChange={(e) => setWidth(e.target.value)}
+          />
+          <h3>Size</h3>
+          <TextField
+            style={{ width: "500px", margin: "10px" }}
+            id="outlined-basic"
+            label="Size"
+            variant="outlined"
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+          />
+          <h3>Org Name</h3>
+          <TextField
+            style={{ width: "500px", margin: "10px" }}
+            id="outlined-basic"
+            label="Org Name"
+            variant="outlined"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
+          />
+          <h3>JSON Data</h3>
+          <TextField
+            style={{ width: "500px", margin: "10px" }}
+            id="outlined-multiline-static"
+            label="Multiline"
+            multiline
+            rows={100}
+            error={jsonError}
+            onChange={(e) => handleUpdateJsonChildren(e.target.value)}
+            value={updateJsonChildrenValue}
+          />
+          <Button
+            variant="contained"
+            onClick={() => setJsonChildrens(updateJsonChildrenValue)}
+          >
+            Force Save
+          </Button>
+        </div>
+      )}
       <footer></footer>
     </div>
   );

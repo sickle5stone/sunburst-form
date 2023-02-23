@@ -1,12 +1,11 @@
 .App {
-  min-height: 100%;
   /* text-align: center; */
-  background: #d8d8d840;
 }
 
 .body {
   padding: 40px 80px;
   display: flex;
+  margin-left: 120px;
 }
 
 .form {
@@ -50,8 +49,10 @@
 }
 
 header{
+  position: relative;
   background-color: #282c34;
-  min-height: 5vh
+  min-height: 2vh;
+  z-index: 5;
 }
 
 footer {
@@ -59,10 +60,11 @@ footer {
   width: 100%;
   bottom: 0;
   background-color: #282c34;
-  min-height: 5vh;
+  min-height: 2vh;
+  z-index: 5;
 }
 
-#target:hover:after {
+.target:hover:after {
   /* box-shadow: inset 0 0 0 1000px rgba(0,0,0,.2); */
   /* box-shadow: inset 10px 10px 100px 100px #000; */
     background: #000;
@@ -77,12 +79,17 @@ footer {
     width: 100%;
 }
 
-#target {
-  opacity: 0.9
+.listItem:hover {
+  background: #C4D4E0
 }
 
-#target:hover {
-  opacity: 1.2;
+.target {
+  opacity: 1.0;
+}
+
+.target:hover {
+  opacity: 1;
+  fill: lightblue;
 }
 
 .alert-enter {

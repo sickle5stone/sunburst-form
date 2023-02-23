@@ -17,14 +17,15 @@ export default function TemporaryDrawer(props) {
   React.useEffect(() => {
     let totalBalance = 0;
     const categories = {};
-    children.forEach((child) => {
-      console.log(child);
+    children?.forEach((child) => {
+      if (child.name === "General Purpose") {
+        setTempValue(child.value);
+      }
       totalBalance += Number.parseInt(child.total);
       categories[child.name] = Number.parseInt(child.total);
     });
 
     // console.log(categories);
-
     setTotalBalance(totalBalance);
     setAccountCategories(categories);
   }, [data, children]);
@@ -33,13 +34,16 @@ export default function TemporaryDrawer(props) {
   const [newCategory, setNewCategory] = React.useState("");
   const [newBalance, setNewBalance] = React.useState(0);
   const [saving, setSaving] = React.useState(true);
+  const [tempValue, setTempValue] = React.useState(0);
 
   const handleAddCategories = () => {
     if (accountCategories[newCategory] !== undefined) {
       return;
     }
+
     setAccountCategories({
       ...accountCategories,
+      "General Purpose": tempValue,
       [newCategory]: Number.parseInt(newBalance),
     });
     setNewCategory("");
@@ -76,6 +80,14 @@ export default function TemporaryDrawer(props) {
   //   });
   // }, [newCategory, newBalance, accountCategories]);
 
+  const handleSetNewBalance = (newBalance) => {
+    const limit = accountCategories["General Purpose"];
+
+    const maxAmount = Math.min(newBalance, limit);
+    setTempValue(limit - maxAmount);
+    setNewBalance(maxAmount);
+  };
+
   return (
     // <Drawer anchor={"right"} open={open} onClose={() => setOpen(!open)}>
     <Box sx={{ padding: "20px" }} role="presentation">
@@ -90,61 +102,71 @@ export default function TemporaryDrawer(props) {
       />
       <Divider></Divider>
       <h1>Categorize Account Balances</h1>
-      <div style={{ display: "flex" }}></div>
-      {Object.entries(accountCategories).map(([key, value]) => {
-        return (
-          <React.Fragment>
-            <TextField
-              style={{ margin: "20px 0px" }}
-              id="outlined-basic"
-              label="Category"
-              variant="outlined"
-              value={key}
-              disabled={key === "uncategorized"}
-            />
-            <TextField
-              style={{ margin: "20px 0px 0px 20px" }}
-              id="outlined-basic"
-              label="Balance for Category"
-              variant="outlined"
-              value={value}
-              disabled={key === "uncategorized"}
-            />
-            {/* {!addCategory && (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {Object.entries(accountCategories).map(([key, value]) => {
+          return (
+            <Box>
+              <TextField
+                style={{ margin: "20px 0px", flex: 1 }}
+                id="outlined-basic"
+                label="Category"
+                variant="outlined"
+                value={key}
+                disabled={key === "General Purpose"}
+              />
+              <TextField
+                style={{ margin: "20px 0px 0px 20px", flex: 1 }}
+                id="outlined-basic"
+                label="Balance for Category"
+                variant="outlined"
+                value={key === "General Purpose" ? tempValue : value}
+                disabled={key === "General Purpose"}
+              />
+              {/* {!addCategory && (
               <Button onClick={() => setAddCategory(true)}>+</Button>
             )} */}
+            </Box>
+          );
+        })}
+        {addCategory ? (
+          <React.Fragment>
+            <div style={{ display: "flex", flex: 1 }}>
+              <TextField
+                style={{ margin: "20px 0" }}
+                id="outlined-basic"
+                label="Category"
+                variant="outlined"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+              />
+              <TextField
+                style={{ margin: "20px 0 0 20px" }}
+                id="outlined-basic"
+                label="Balance for Category"
+                variant="outlined"
+                value={newBalance}
+                onChange={(e) => handleSetNewBalance(e.target.value)}
+                disabled={newCategory.length === 0}
+              />
+              <Button
+                style={{ margin: "25px 0px 25px 15px" }}
+                variant="contained"
+                onClick={() => handleAddCategories()}
+              >
+                +
+              </Button>
+            </div>
           </React.Fragment>
-        );
-      })}
-      {addCategory ? (
-        <React.Fragment>
-          <div style={{ display: "flex" }}>
-            <TextField
-              style={{ margin: "20px 0" }}
-              id="outlined-basic"
-              label="Category"
-              variant="outlined"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-            />
-            <TextField
-              style={{ margin: "20px 0 0 20px" }}
-              id="outlined-basic"
-              label="Balance for Category"
-              variant="outlined"
-              value={newBalance}
-              onChange={(e) => setNewBalance(e.target.value)}
-            />
-            <Button onClick={() => handleAddCategories()}>+</Button>
-          </div>
-        </React.Fragment>
-      ) : (
-        <Button onClick={() => setAddCategory(true)}>+</Button>
-      )}
+        ) : (
+          <Button variant="contained" onClick={() => setAddCategory(true)}>
+            +
+          </Button>
+        )}
+      </div>
       <Divider />
       <Button
+        variant="contained"
         style={{ margin: "20px 0px" }}
-        variant="outlined"
         onClick={() => handleSave()}
       >
         Save

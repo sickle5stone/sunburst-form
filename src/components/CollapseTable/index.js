@@ -35,11 +35,19 @@ function createData(account, balance) {
 }
 
 function Row(props) {
-  const { row, onSave, data, entity } = props;
+  const { row, onSave, data, entity, activeAccount } = props;
   const [open, setOpen] = React.useState(false);
+
+  // console.log(data, activeAccount);
 
   if (data === undefined || Object.keys(data).length < 0) {
     return;
+  }
+
+  if (data.name === activeAccount) {
+    if (!open) {
+      setOpen(true);
+    }
   }
 
   const handleSave = (saveData) => {
@@ -114,7 +122,7 @@ Row.propTypes = {
 // const rows = [createData("Frozen yoghurt", 159, 6.0, 24, 4.0, 3.99)];
 
 export default function CollapsibleTable(props) {
-  const { rows, onSave, data, entity } = props;
+  const { rows, onSave, data, entity, activeAccount } = props;
 
   if (data.children.length < 1) {
     return;
@@ -130,7 +138,6 @@ export default function CollapsibleTable(props) {
   // console.log(filteredData);
 
   // console.log(filteredData);
-
   return (
     <TableContainer component={Paper} style={{}}>
       <Table aria-label="collapsible table">
@@ -148,6 +155,7 @@ export default function CollapsibleTable(props) {
               data={child}
               onSave={onSave}
               entity={entity}
+              activeAccount={activeAccount}
             />
           ))}
         </TableBody>

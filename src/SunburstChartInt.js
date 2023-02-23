@@ -14,15 +14,7 @@ const partition = (data) => {
   return partition;
 };
 
-const handleOnLastClick = (e) => {
-  console.log("I'm last");
-
-  // console.log(e.srcElement.__data__);
-};
-
 const handleHover = (e) => {
-  // console.log("hovering");
-  // console.log(e.relatedTarget);
   // let target = e.relatedTarget;
   // target.style("stroke", "red");
 };
@@ -38,6 +30,8 @@ function usePrevious(value) {
 const Sunburst = (props) => {
   const svgRef = useRef();
   const prevProps = usePrevious(props);
+  const [special, setSpecial] = React.useState(false);
+
   useEffect(() => {
     if (!isEqual(prevProps, props)) {
       renderSunburst();
@@ -45,8 +39,31 @@ const Sunburst = (props) => {
     // eslint-disable-next-line
   }, [props]);
 
+  const handleOnLastClick = (e, p, smth, recalculate) => {
+    console.log("I'm last");
+    if (special) {
+      console.log("going back!");
+      setSpecial(false);
+      props.goBack();
+      // d3.select(`#target-${p.parent.data.name}-${p.data.name}`)._groups[0][0];
+    } else {
+      recalculate(e.srcElement.__data__.data.name);
+    }
+    if (!special) {
+      setSpecial(true);
+    }
+  };
+
   const renderSunburst = () => {
-    const { data, width } = props;
+    const {
+      data,
+      width,
+      recalculate,
+      goBack,
+      storeRoot,
+      specialRoot,
+      updateSelections,
+    } = props;
 
     const color = d3.scaleOrdinal(
       d3.quantize(d3.interpolateRainbow, data.children.length + 2)
@@ -79,8 +96,9 @@ const Sunburst = (props) => {
         .attr("transform", `translate(${width / 2},${width / 2})`);
 
       const root = partition(data);
+
       root.each((d) => (d.current = d));
-      console.log("Root:", root);
+      // console.log("Root:", root);
 
       const path = g
         .append("g")
@@ -115,13 +133,22 @@ const Sunburst = (props) => {
         .style("pointer-events", "all")
         .on("mouseover", handleHover)
         .on("click", clicked)
-        .attr("id", "target");
+        .attr("class", `target`)
+        .attr("id", (d) => {
+          return `target-${d.parent.data.name}-${d.data.name}`;
+        });
 
       path
         .filter((d) => !d.children)
+        .style("pointer-events", "all")
         .style("cursor", "pointer")
-        .on("click", handleOnLastClick)
-        .attr("id", "target");
+        .on("click", (e, p, smth) =>
+          handleOnLastClick(e, p, smth, recalculate, parent)
+        )
+        .attr("class", `target`)
+        .attr("id", (d) => {
+          return `target-${d.parent.data.name}-${d.data.name}`;
+        });
 
       path.append("title").text(
         (d) =>
@@ -140,18 +167,15 @@ const Sunburst = (props) => {
         .selectAll("text")
         .data(root.descendants().slice(1))
         .join("text")
+        .attr("font-weight", "bold")
         .attr("dy", "0.35em")
         .attr("fill-opacity", (d) => +labelVisible(d.current))
         .attr("transform", (d) => labelTransform(d.current))
         .text((d) => {
           return d.data.total
-            ? `${d.data.name} : $${d.data.total}`
-            : `$${d.data.name}`;
+            ? `${d.data.name} $${d.data.total}`
+            : `${d.data.name} $${d.data.value}`;
         });
-      // .append("svg:tspan")
-      // .attr("x", 0)
-      // .attr("dy", "2em")
-      // .text((d) => `Total: ${d.data.total}`);
 
       const parent = g
         .append("circle")
@@ -172,6 +196,16 @@ const Sunburst = (props) => {
         .on("click", clicked);
 
       function clicked(event, p) {
+        if (!special) {
+          // console.log(root.data.name);
+          // if (p.data.name !== root.data.name) {
+          //   storeRoot(true);
+          // } else if (p.data.name === root.data.name) {
+          //   storeRoot(false);
+          // }
+          // console.log(p.depth, p.data.name);
+        }
+
         parent.datum(p.parent || root);
 
         g.select("#mainCircleText").text(p.data.name);
@@ -192,7 +226,7 @@ const Sunburst = (props) => {
             })
         );
 
-        const t = g.transition().duration(750);
+        const t = g.transition().duration(500);
 
         // Transition the data on all arcs, even the ones that aren’t visible,
         // so that if this transition is interrupted, entering arcs will start
@@ -229,6 +263,8 @@ const Sunburst = (props) => {
           .transition(t)
           .attr("fill-opacity", (d) => +labelVisible(d.target))
           .attrTween("transform", (d) => () => labelTransform(d.current));
+
+        updateSelections(p.depth, p.data.name, p.parent.data.name);
       }
 
       function arcVisible(d) {
@@ -255,14 +291,20 @@ const Sunburst = (props) => {
         width={props.size}
         height={props.size}
         ref={svgRef}
-        id={`${props.keyId}-svg`}
+        id={`${props.size}-svg`}
       ></svg>
-      {/* <Button
-        style={{ position: "absolute", top: "50%", left: "50%" }}
-        onClick={props.handleClick}
-      >
-        Hello
-      </Button> */}
+      {special && (
+        <Button
+          variant="contained"
+          style={{ position: "absolute", top: "53%", left: "46.5%" }}
+          onClick={() => {
+            props.goBack();
+            setSpecial(false);
+          }}
+        >
+          Reset
+        </Button>
+      )}
     </div>
   );
 };

@@ -1,17 +1,19 @@
 {
     "org": {
         "name": "Acme",
-        "total": 100,
+        "total": 590,
         "entities": {
             "entity1": {
-                "total": 50,
+                "total": 140,
                 "accounts": {
                     "account1": {
-                        "total": 50,
+                        "total": 140,
                         "categories": {
-                            "uncategorized": 8,
-                            "F": 25,
-                            "CL": 17
+                            "General Purpose": 8,
+                            "FX": 25,
+                            "Intercompany Loans": 17,
+                            "Investments": 50,
+                            "Supplier Payments": 40
                         }
                     }                        
                 }
@@ -22,9 +24,80 @@
                     "account1": {
                         "total": 50,
                         "categories": {
-                            "uncategorized": 50
+                            "General Purpose": 50
                         }
                     }                        
+                }
+            },
+            "entity3": {
+                "total": 200,
+                "accounts": {
+                    "account1": {
+                        "total": 100,
+                        "categories": {
+                            "General Purpose": 8,
+                            "Salary Payments": 17,
+                            "Rent": 35
+                        }
+                    },
+                    "account2": {
+                        "total": 75,
+                        "categories": {
+                            "General Purpose": 50,
+                            "Marketing": 25
+                        }
+                    },
+                    "account3": {
+                        "total": 25,
+                        "categories": {
+                            "Training": 10,
+                            "Equipment": 15
+                        }
+                    }
+                }
+            },
+            "entity4": {
+                "total": 100,
+                "accounts": {
+                    "account1": {
+                        "total": 75,
+                        "categories": {
+                            "General Purpose": 25,
+                            "Intercompany Loans": 50
+                        }
+                    },
+                    "account2": {
+                        "total": 25,
+                        "categories": {
+                            "FX": 25
+                        }
+                    }                        
+                }
+            },
+            "entity5": {
+                "total": 100,
+                "accounts": {
+                    "account1": {
+                        "total": 50,
+                        "categories": {
+                            "General Purpose": 30,
+                            "Rent": 20
+                        }
+                    },
+                    "account2": {
+                        "total": 25,
+                        "categories": {
+                            "Office Supplies": 15,
+                            "Utilities": 10
+                        }
+                    },
+                    "account3": {
+                        "total": 25,
+                        "categories": {
+                            "Travel": 10,
+                            "Entertainment": 15
+                        }
+                    }
                 }
             }
         }
