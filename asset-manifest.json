@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/sunburst-form/static/css/main.5fec5745.css",
-    "main.js": "/sunburst-form/static/js/main.1ea2e53c.js",
+    "main.js": "/sunburst-form/static/js/main.447d5a5a.js",
     "static/js/787.2adc4d2d.chunk.js": "/sunburst-form/static/js/787.2adc4d2d.chunk.js",
     "static/media/logo.svg": "/sunburst-form/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/sunburst-form/index.html",
     "main.5fec5745.css.map": "/sunburst-form/static/css/main.5fec5745.css.map",
-    "main.1ea2e53c.js.map": "/sunburst-form/static/js/main.1ea2e53c.js.map",
+    "main.447d5a5a.js.map": "/sunburst-form/static/js/main.447d5a5a.js.map",
     "787.2adc4d2d.chunk.js.map": "/sunburst-form/static/js/787.2adc4d2d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5fec5745.css",
-    "static/js/main.1ea2e53c.js"
+    "static/js/main.447d5a5a.js"
   ]
 }
