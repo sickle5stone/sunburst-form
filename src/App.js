@@ -79,6 +79,17 @@ function App() {
     makeJson(rows);
   }, [rows]);
 
+  useEffect(() => {
+    const storedName = localStorage.getItem("org", orgName);
+
+    setJsonChildrens((prevState) => ({
+      org: {
+        ...prevState.org,
+        name: storedName,
+      },
+    }));
+  }, []);
+
   const appendStateArray = (newItem, getAction, setAction) => {
     let newStateArray = [...newItem, ...getAction];
     setAction(newStateArray);
@@ -496,9 +507,13 @@ function App() {
   };
 
   const [activePage, setActivePage] = React.useState("Main");
-  const [width, setWidth] = React.useState(800);
-  const [size, setSize] = React.useState(400);
-  const [orgName, setOrgName] = React.useState("Acme");
+  const [width, setWidth] = React.useState(
+    localStorage.getItem("width") || 800
+  );
+  const [size, setSize] = React.useState(localStorage.getItem("size") || 800);
+  const [orgName, setOrgName] = React.useState(
+    localStorage.getItem("org") || "Acme"
+  );
 
   React.useEffect(() => {
     setJsonChildrens((prevState) => ({
@@ -507,7 +522,16 @@ function App() {
         name: orgName,
       },
     }));
+    localStorage.setItem("org", orgName);
   }, [orgName]);
+
+  React.useEffect(() => {
+    localStorage.setItem("width", width);
+  }, [width]);
+
+  React.useEffect(() => {
+    localStorage.setItem("size", size);
+  }, [size]);
 
   return (
     <div className="App">
