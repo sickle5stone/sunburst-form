@@ -25,7 +25,7 @@ import Box from "@mui/material/Box";
 import Zoom from "@mui/material/Zoom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { sortOnCategories } from "./utils";
-import { Mail, MarkunreadMailbox } from "@mui/icons-material";
+import { Home, Mail, MarkunreadMailbox, Settings } from "@mui/icons-material";
 import { json } from "d3";
 
 function App() {
@@ -561,7 +561,7 @@ function App() {
             >
               <ListItemButton>
                 <ListItemIcon>
-                  <Mail></Mail>
+                  {text === "Main" ? <Home></Home> : <Settings></Settings>}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
