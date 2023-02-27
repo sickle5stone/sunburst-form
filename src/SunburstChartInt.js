@@ -196,16 +196,6 @@ const Sunburst = (props) => {
         .on("click", clicked);
 
       function clicked(event, p) {
-        if (!special) {
-          // console.log(root.data.name);
-          // if (p.data.name !== root.data.name) {
-          //   storeRoot(true);
-          // } else if (p.data.name === root.data.name) {
-          //   storeRoot(false);
-          // }
-          // console.log(p.depth, p.data.name);
-        }
-
         parent.datum(p.parent || root);
 
         g.select("#mainCircleText").text(p.data.name);
@@ -226,7 +216,7 @@ const Sunburst = (props) => {
             })
         );
 
-        const t = g.transition().duration(500);
+        const t = g.transition().duration(350);
 
         // Transition the data on all arcs, even the ones that aren’t visible,
         // so that if this transition is interrupted, entering arcs will start
@@ -264,7 +254,7 @@ const Sunburst = (props) => {
           .attr("fill-opacity", (d) => +labelVisible(d.target))
           .attrTween("transform", (d) => () => labelTransform(d.current));
 
-        updateSelections(p.depth, p.data.name, p.parent.data.name);
+        // updateSelections(p.depth, p.data.name, p.parent.data.name);
       }
 
       function arcVisible(d) {
@@ -284,6 +274,19 @@ const Sunburst = (props) => {
       }
     }
   };
+
+  // React.useEffect(() => {
+  //   console.log("updated P");
+  //   if (p) {
+  //   }
+  //   return () => {
+  //     const { updateSelections } = props;
+
+  //     if (p) {
+  //       updateSelections(p.depth, p.data.name, p.parent.data.name);
+  //     }
+  //   };
+  // }, [p, props]);
 
   return (
     <div id={props.keyId} className="text-center">

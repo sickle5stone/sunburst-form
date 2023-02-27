@@ -134,7 +134,12 @@ function App() {
     // const newRow = [];
     const { entity, level, key, balance, account } = newFields;
 
+    // const balance = Number.parseInt(balanceStr);
+
     let newObj = JSON.parse(JSON.stringify(jsonChildrens));
+    newObj["org"]["total"] += Number.parseInt(balance);
+    newObj["org"]["entities"][entitySelected]["total"] +=
+      Number.parseInt(balance);
     newObj["org"]["entities"][entitySelected]["accounts"] = {
       ...newObj["org"]["entities"][entitySelected]["accounts"],
       [account]: {
@@ -368,51 +373,54 @@ function App() {
             </Select>
           </Paper>
 
-          <Paper
-            style={{
-              minWidth: "80%",
-              display: "flex",
-              alignItems: "center",
-              padding: "10px 20px",
-              margin: "0 0 20px 0",
-            }}
-          >
-            <TextField
-              style={{ width: "500px", margin: "10px" }}
-              id="outlined-basic"
-              label="Account"
-              variant="outlined"
-              value={newAccountValue}
-              onChange={(e) => setNewAccountValue(e.target.value)}
-              disabled={disableForm}
-            />
-
-            <TextField
-              style={{ width: "500px", margin: "10px" }}
-              id="outlined-basic"
-              label="Balance"
-              variant="outlined"
-              value={newBalanceValue}
-              onChange={(e) => setNewBalanceValue(e.target.value)}
-              disabled={disableForm}
-            />
-            <Button
+          {entitySelected !== 0 && (
+            <Paper
               style={{
-                maxHeight: "4em",
-                fontWeight: "bold",
+                minWidth: "80%",
+                display: "flex",
+                alignItems: "center",
+                padding: "10px 20px",
+                margin: "0 0 20px 0",
               }}
-              onClick={() => {
-                appendRow({
-                  account: newAccountValue,
-                  balance: newBalanceValue,
-                });
-              }}
-              variant="contained"
-              disabled={disableForm}
             >
-              Add Account
-            </Button>
-          </Paper>
+              <TextField
+                style={{ width: "500px", margin: "10px" }}
+                id="outlined-basic"
+                label="Account"
+                variant="outlined"
+                value={newAccountValue}
+                onChange={(e) => setNewAccountValue(e.target.value)}
+                disabled={disableForm}
+              />
+
+              <TextField
+                style={{ width: "500px", margin: "10px" }}
+                id="outlined-basic"
+                label="Balance"
+                variant="outlined"
+                value={newBalanceValue}
+                onChange={(e) => setNewBalanceValue(e.target.value)}
+                disabled={disableForm}
+              />
+              <Button
+                style={{
+                  maxHeight: "4em",
+                  fontWeight: "bold",
+                }}
+                onClick={() => {
+                  appendRow({
+                    entity: entitySelected,
+                    account: newAccountValue,
+                    balance: newBalanceValue,
+                  });
+                }}
+                variant="contained"
+                disabled={disableForm}
+              >
+                Add Account
+              </Button>
+            </Paper>
+          )}
           {entitySelected !== 0 && (
             <Paper
               style={{
@@ -462,19 +470,19 @@ function App() {
   };
 
   const handleUpdateSelections = (depth, data, parent) => {
+    console.log(depth, data, parent);
     switch (depth) {
       case 1:
-        console.log(depth, data, parent);
+        // console.log(depth, data, parent);
         setEntitySelected(data);
         break;
       case 2:
-        console.log(depth, data, parent);
+        // console.log(depth, data, parent);
         // setAccount
         setEntitySelected(parent);
         setActiveAccount(data);
         break;
       default:
-        return;
     }
   };
 
@@ -544,10 +552,12 @@ function App() {
         }}
         PaperProps={{
           style: {
-            background: "#d8d8d840",
+            background: "#f6f6f6",
+            border: 0,
             paddingTop: "2.5vh",
             position: "fixed",
             zIndex: 1,
+            minWidth: "180px",
           },
         }}
       >
@@ -560,7 +570,7 @@ function App() {
               class="listItem"
             >
               <ListItemButton>
-                <ListItemIcon>
+                <ListItemIcon sx={{ color: "black", minWidth: "36px" }}>
                   {text === "Main" ? <Home></Home> : <Settings></Settings>}
                 </ListItemIcon>
                 <ListItemText primary={text} />
@@ -594,7 +604,7 @@ function App() {
                   // key={Date.now()}
                   recalculate={sortDataOnCategories}
                   data={jsonData}
-                  keyId={Date.now()}
+                  keyId={size}
                   width={width}
                   size={size}
                   update={show}
@@ -613,7 +623,7 @@ function App() {
         </div>
       )}
       {activePage === "Settings" && (
-        <div style={{ margin: "80px 160px" }}>
+        <div style={{ margin: "80px 200px" }}>
           <h3>Width</h3>
           <TextField
             style={{ width: "500px", margin: "10px" }}

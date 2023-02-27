@@ -11,6 +11,15 @@ const theme = createTheme({
   typography: {
     fontFamily: ['"Source Sans Pro"', "sans-serif"].join(","),
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#355CD3",
+        },
+      },
+    },
+  },
 });
 
 root.render(

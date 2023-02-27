@@ -37,6 +37,7 @@ function createData(account, balance) {
 function Row(props) {
   const { row, onSave, data, entity, activeAccount } = props;
   const [open, setOpen] = React.useState(false);
+  const [runOnce, setRunOnce] = React.useState(true);
 
   // console.log(data, activeAccount);
 
@@ -45,10 +46,16 @@ function Row(props) {
   }
 
   if (data.name === activeAccount) {
-    if (!open) {
-      setOpen(true);
+    if (runOnce && !open) {
+      setOpen(!open);
+      setRunOnce(false);
     }
   }
+
+  const handleOpen = (state) => {
+    setOpen(state);
+    // setRunOnce(true);
+  };
 
   const handleSave = (saveData) => {
     // console.log(saveData, entity, data.name);
@@ -67,13 +74,13 @@ function Row(props) {
     <React.Fragment>
       <TableRow
         sx={{ "& > *": { borderBottom: "unset" } }}
-        onClick={() => setOpen(!open)}
+        onClick={() => handleOpen(!open)}
       >
         <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() => setOpen(!open)}
+            onClick={() => handleOpen(!open)}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
@@ -112,7 +119,7 @@ Row.propTypes = {
         customerId: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
       })
-    ).isRequired,
+    ),
     name: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     protein: PropTypes.number.isRequired,
@@ -149,7 +156,7 @@ export default function CollapsibleTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredData.children.map((child) => (
+          {filteredData?.children.map((child) => (
             <Row
               key={child.name}
               data={child}

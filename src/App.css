@@ -49,8 +49,10 @@
 }
 
 header{
-  position: relative;
-  background-color: #282c34;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: #000E33;
   min-height: 2vh;
   z-index: 5;
 }
@@ -59,7 +61,7 @@ footer {
   position: fixed;
   width: 100%;
   bottom: 0;
-  background-color: #282c34;
+  background-color: #000E33;
   min-height: 2vh;
   z-index: 5;
 }
@@ -80,7 +82,7 @@ footer {
 }
 
 .listItem:hover {
-  background: #C4D4E0
+  background: #CBDCF1
 }
 
 .target {
@@ -89,7 +91,7 @@ footer {
 
 .target:hover {
   opacity: 1;
-  fill: lightblue;
+  fill: #CBDCF1;
 }
 
 .alert-enter {
