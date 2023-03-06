@@ -105,7 +105,7 @@ export default function TemporaryDrawer(props) {
       <div style={{ display: "flex", flexDirection: "column" }}>
         {Object.entries(accountCategories).map(([key, value]) => {
           return (
-            <Box>
+            <Box style={{ display: "flex" }}>
               <TextField
                 style={{ margin: "20px 0px", flex: 1 }}
                 id="outlined-basic"
@@ -149,9 +149,10 @@ export default function TemporaryDrawer(props) {
                 disabled={newCategory.length === 0}
               />
               <Button
-                style={{ margin: "25px 0px 25px 15px" }}
+                style={{ margin: "20px 0px 20px 20px", padding: 0 }}
                 variant="contained"
                 onClick={() => handleAddCategories()}
+                disabled={newCategory.length === 0 || newBalance === 0}
               >
                 +
               </Button>

@@ -27,6 +27,14 @@ import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { sortOnCategories } from "./utils";
 import { Home, Mail, MarkunreadMailbox, Settings } from "@mui/icons-material";
 import { json } from "d3";
+import { styled as muiStyled } from "@mui/system";
+
+const StyledAddButton = muiStyled(Button)({
+  whitespace: "nowrap",
+  minWidth: "fit-content",
+  padding: "11.5px 24px",
+  fontWeight: "bold",
+});
 
 function App() {
   const [chart, setChart] = React.useState(false);
@@ -318,15 +326,9 @@ function App() {
               variant="outlined"
               value={newEntityBalanceValue}
               onChange={(e) => setNewEntityBalanceValue(e.target.value)}
-              disabled={disableForm}
+              disabled={newEntityValue === "" || disableForm}
             />
-            <Button
-              style={{
-                maxHeight: "4em",
-                padding: "10px 20px",
-                minWidth: "50px",
-                fontWeight: "bold",
-              }}
+            <StyledAddButton
               onClick={() => {
                 appendEntity({
                   entity: newEntityValue,
@@ -334,10 +336,14 @@ function App() {
                 });
               }}
               variant="contained"
-              disabled={disableForm}
+              disabled={
+                newEntityValue === "" ||
+                newEntityBalanceValue === 0 ||
+                disableForm
+              }
             >
               Add Entity
-            </Button>
+            </StyledAddButton>
           </Paper>
 
           <Paper
@@ -400,10 +406,13 @@ function App() {
                 variant="outlined"
                 value={newBalanceValue}
                 onChange={(e) => setNewBalanceValue(e.target.value)}
-                disabled={disableForm}
+                disabled={newAccountValue === "" || disableForm}
               />
               <Button
-                style={{
+                sx={{
+                  whitespace: "nowrap",
+                  minWidth: "fit-content",
+                  padding: "11.5px 24px",
                   maxHeight: "4em",
                   fontWeight: "bold",
                 }}
@@ -415,7 +424,9 @@ function App() {
                   });
                 }}
                 variant="contained"
-                disabled={disableForm}
+                disabled={
+                  newAccountValue === "" || newBalanceValue === 0 || disableForm
+                }
               >
                 Add Account
               </Button>
